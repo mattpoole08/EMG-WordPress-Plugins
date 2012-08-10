@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 35
+/!svn/ver/412172/jetpack/tags/1.1.3
+END
+class.jetpack-xmlrpc-server.php
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/!svn/ver/412172/jetpack/tags/1.1.3/class.jetpack-xmlrpc-server.php
+END
+class.jetpack-ixr-client.php
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/!svn/ver/412172/jetpack/tags/1.1.3/class.jetpack-ixr-client.php
+END
+jetpack.php
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/!svn/ver/412172/jetpack/tags/1.1.3/jetpack.php
+END
+class.jetpack-signature.php
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/!svn/ver/412172/jetpack/tags/1.1.3/class.jetpack-signature.php
+END
+readme.txt
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/!svn/ver/412172/jetpack/tags/1.1.3/readme.txt
+END

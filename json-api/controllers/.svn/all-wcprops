@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/!svn/ver/337916/json-api/tags/1.0.7/controllers
+END
+respond.php
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/!svn/ver/337916/json-api/tags/1.0.7/controllers/respond.php
+END
+core.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/!svn/ver/337916/json-api/tags/1.0.7/controllers/core.php
+END
+posts.php
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/!svn/ver/337916/json-api/tags/1.0.7/controllers/posts.php
+END

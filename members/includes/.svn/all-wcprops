@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/!svn/ver/396885/members/tags/0.2/includes
+END
+capabilities.php
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/!svn/ver/396885/members/tags/0.2/includes/capabilities.php
+END
+admin-bar.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/!svn/ver/396885/members/tags/0.2/includes/admin-bar.php
+END
+widget-login-form.php
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/!svn/ver/396885/members/tags/0.2/includes/widget-login-form.php
+END
+template.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/!svn/ver/396885/members/tags/0.2/includes/template.php
+END
+private-site.php
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/!svn/ver/396885/members/tags/0.2/includes/private-site.php
+END
+shortcodes.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/!svn/ver/396885/members/tags/0.2/includes/shortcodes.php
+END
+deprecated.php
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/!svn/ver/396885/members/tags/0.2/includes/deprecated.php
+END
+update.php
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/!svn/ver/396885/members/tags/0.2/includes/update.php
+END
+widget-users.php
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/!svn/ver/396885/members/tags/0.2/includes/widget-users.php
+END
+content-permissions.php
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/!svn/ver/396885/members/tags/0.2/includes/content-permissions.php
+END
+comments.php
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/!svn/ver/396885/members/tags/0.2/includes/comments.php
+END
+widgets.php
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/!svn/ver/396885/members/tags/0.2/includes/widgets.php
+END
+functions.php
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/!svn/ver/396885/members/tags/0.2/includes/functions.php
+END
