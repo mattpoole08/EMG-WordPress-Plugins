@@ -5,7 +5,7 @@ Description: Post your photos and galleries from PhotoShelter.
 Author: PhotoShelter
 Author URI: http://www.photoshelter.com
 Plugin URI: http://www.photoshelter.com/help/tut/market/plugin
-Version: 1.3.5
+Version: 1.5.4
 License: GPLv2 - http://www.gnu.org/licenses/gpl-2.0.html
 */
 
@@ -87,11 +87,21 @@ function photoshelter_img_handler($atts, $content=null, $code="") {
 	$embed_code = PSIframe::IMG_CODE;
 	$embed_code = preg_replace('/{{url}}/', PSIframe::BASE_URL, $embed_code);
 	$embed_code = preg_replace('/{{i_id}}/', $atts['i_id'], $embed_code);
-	if (!empty($atts['width']))
+	$wstr = '';
+	if (!empty($atts['width'])) {
 		$embed_code = preg_replace('/{{width}}/', $atts['width'], $embed_code);
-	if (!empty($atts['height']))
+		$wstr = ' style="width: ' . $atts['width'] . 'px;"';
+	}
+	if (!empty($atts['height'])) {
 		$embed_code = preg_replace('/{{height}}/', $atts['height'], $embed_code);
+	}
+
 	$embed_code = preg_replace('/{{buy}}/', $atts['buy'], $embed_code);
+
+	if (!empty($atts['caption'])) {
+		$embed_code = '<div id="ps_captionIns" class="wp-caption alignnone"' . $wstr .'>' . $embed_code . '<p class="wp-caption-text">' . $atts['caption'] . '</p></div>';
+	}
+
 	return $embed_code;
 }
 
@@ -188,6 +198,14 @@ function ps_admin_css() {
 	<?php
 }
 function ps_option_page() {			
+	global $ps_login_err;
+	global $psc;
+	
+	// force a plugin auth check with idle
+	try {
+		$auth_chk = $psc->idle();
+	} catch (Exception $e) {}
+	
 	?>
 	<div class="wrap">
 	<br/>
@@ -205,7 +223,7 @@ function ps_option_page() {
 	
 	if( $last_cookie ) {
 		?>
-		<p class="ps-ok-notice notices"><?php echo sprintf(__('You are logged in as %s', 'photoshelter' ), $options['username']); ?></p>
+		<p class="ps-ok-notice notices"><?php echo sprintf(__('You are logged in as %s.', 'photoshelter' ), $options['username']); ?></p>
 		<form action="" method="post">
 			<?php wp_nonce_field('photoshelter_admin_logout'); ?>
 			<input class="hidden" type="hidden" name="photoshelter_logout" id="photoshelter_logout" value="logout" />
@@ -234,11 +252,11 @@ function ps_option_page() {
 	<option value="-1">Your single-user account</option>
 	<?php 
 		foreach($options['orgs'] as $org) {
-			if($org['OU_F_MEM'] == 't') {
-				if ($options['auth_org_id'] == $org['O_ID']) {
-					echo '<option value="' . $org['O_ID'] . '" SELECTED>' . $org['O_NAME'] . '</option>';	
+			if($org['member'] == 't') {
+				if ($options['auth_org_id'] == $org['id']) {
+					echo '<option value="' . $org['id'] . '" SELECTED>' . $org['name'] . '</option>';	
 				} else {
-					echo '<option value="' . $org['O_ID'] . '">' . $org['O_NAME'] . '</option>';
+					echo '<option value="' . $org['id'] . '">' . $org['name'] . '</option>';
 				}
 			}
 		}
@@ -252,11 +270,13 @@ function ps_option_page() {
 	} else {
 	?>
 		<?php 
+		$ps_en = false;
 		if( !get_option('photoshelter') )
 		{
 			echo '<p class="ps-error-notice notices">' . __('Not Logged In','photoshelter') . '</p>';
+			$ps_en = true;
 		}
-		if (!$psc->logged_in && get_option('photoshelter_logged_in') != '1') {
+		if (!$psc->logged_in && get_option('photoshelter_logged_in') != '1' && !$ps_en) {
 				echo '<p class="ps-error-notice notices">' . get_option('photoshelter_logged_in') . '</p>';
 		}
 		?>
@@ -270,12 +290,52 @@ function ps_option_page() {
 			<input type="password" name="ps_login_password" class="ps_login_input show" id="ps_login_password" value="<?php echo esc_attr( $options['password']) ?>" />
 			<input class="hidden" type="hidden" name="ps_login_auth" id="ps_login_auth" value="ps_login_auth" />
 			<input type="submit" id="ps_login_submit" class="button-primary ps_login_input show" value="<?php _e('Authorize','photoshelter') ?>" />
+			<?php
+			if ($ps_login_err) { ?>
+			<span style="color: #cc0000;">The email or password you provided is incorrect.</span>
+			<?php 
+			}
+			?>
 		</form>
 	<?php
 	}
 	?>
 		</div>
+
 	</div>
+	<br />
+		<?php 
+
+		$wp_has_menu = (version_compare(get_bloginfo('version'), 3) >= 0) ? true : false;
+
+		if ($wp_has_menu) {
+			if ($menu_option = get_option('photoshelter_menu_create')) {
+				require_once( ABSPATH . 'wp-admin/includes/nav-menu.php' );
+				if (!is_nav_menu($menu_option))
+					$menu_option = 'f';
+			} else {
+				$menu_option = 'f';	
+			}
+		}
+
+		if ( $last_cookie && $wp_has_menu) { ?>
+		<div id="poststuff" class="metabox-holder">
+		<div class="postbox" id="ps_login_form">
+			<h3 class="hndle"><span><?php _e('Add PhotoShelter Menu','photoshelter'); ?></span></h3>
+			<div class="inside">
+			<?php if ($menu_option == 'f') {  ?>
+			Use the PhotoShelter Menu tool to get a jump start on integrating your PhotoShelter and WordPress sites. Click the button below, and a set of links to your PhotoShelter website will be automatically generated and added to WordPress as a menu.
+			<br /><br /> <form method="post">
+			<?php wp_nonce_field('photoshelter_admin_add_menu'); ?>
+			<input class="hidden" type="hidden" name="ps_admin_add_menu" id="ps_admin_add_menu" value="ps_admin_add_menu" />
+			<input type="submit" name="photoshelter_add_menu" id="photoshelter_add_menu" class="show button" value="<?php _e('Create PhotoShelter Menu','photoshelter') ?>" />
+			</form>
+			<?php } else { ?>
+			You have successfully added a PhotoShelter menu to your WordPress site. To enable or edit this in your theme, select the PhotoShelter Official Menu from <a href="<?php bloginfo('wpurl'); ?>/wp-admin/nav-menus.php">Appearance -> Menus</a> in your dashboard.
+			<?php } ?>
+		</div>
+		</div>
+		<?php } ?>
 	</div>
 
 	<?php
@@ -303,7 +363,14 @@ function process_photoshelter_login()
 	
 	check_admin_referer('photoshelter_admin_update_username_password');
 	
-	$result = $psc->auth();
+	try {
+		$result = $psc->auth();
+	} catch (Exception $e) {
+		$GLOBALS['ps_login_err'] = true;
+		//do nothing - login invalid
+		return;
+	}
+
 	wp_safe_redirect( 'admin.php?page=photoshelter-admin' );
 }
 
@@ -353,6 +420,82 @@ function logout()
 	}
 }
 
+function add_photoshelter_menu() {
+	if (!isset($_POST['ps_admin_add_menu']))
+		return false;
+
+	require_once( ABSPATH . 'wp-admin/includes/nav-menu.php' );
+	global $psc;
+	
+	
+	$_nav_menu_selected_id = wp_update_nav_menu_object( 0, array('menu-name' => 'PhotoShelter Menu') );
+
+	if ( is_wp_error( $_nav_menu_selected_id ) ) {
+		$messages[] = '<div id="message" class="error"><p>' . $_nav_menu_selected_id->get_error_message() . '</p></div>';
+	} else {
+		$_menu_object = wp_get_nav_menu_object( $_nav_menu_selected_id );
+		$nav_menu_selected_id = $_nav_menu_selected_id;
+		$nav_menu_selected_title = $_menu_object->name;
+		$messages[] = 'The menu ' . $nav_menu_selected_title .
+			' has been created with id ' . $nav_menu_selected_id;
+	}
+
+	$custom_url = $psc->get_custom_url();
+	if (empty($custom_url)) {
+		echo "We were unable to retrieve information about your custom site URL from PhotoShelter.";
+	}
+
+	$menu_items = array(
+		0 => array('menu-item-url' => $custom_url,
+			'menu-item-title' => 'Archive',
+			'menu-item-type' => 'custom'),
+		1 => array('menu-item-url' => $custom_url . "/gallery-list",
+			'menu-item-title' => 'Gallery List',
+			'menu-item-type' => 'custom'),
+		2 => array('menu-item-url' => $custom_url . "/search-page",
+			'menu-item-title' => 'Search Archive',
+			'menu-item-type' => 'custom'),
+		3 => array('menu-item-url' => $custom_url . "/lbx/lbx-list",
+			'menu-item-title' => 'Lightboxes',
+			'menu-item-type' => 'custom'),
+		4 => array('menu-item-url' => $custom_url . "/cart",
+			'menu-item-title' => 'Cart',
+			'menu-item-type' => 'custom'),
+		5 => array('menu-item-url' => $custom_url . "/login",
+			'menu-item-title' => 'Client Login',
+			'menu-item-type' => 'custom')
+		);
+	
+	$saved_items = wp_save_nav_menu_items($nav_menu_selected_id, $menu_items);
+	$menu = wp_get_nav_menu_object($nav_menu_selected_id);
+	$mi = wp_get_nav_menu_items( $menu->term_id, array('post_status' => 'any') );
+	foreach ($mi as $miL) {
+		$miDb[$miL->ID] = $miL;
+	}
+
+	$post_fields = array( 'menu-item-description', 'menu-item-attr-title', 'menu-item-target', 'menu-item-classes', 'menu-item-xfn' );
+	foreach ($saved_items as $n => $sid) {
+		$c[$sid]['menu-item-db-id'] = $sid;
+		$c[$sid]['menu-item-object-id'] = $miDb[$sid]->object_id;
+		$c[$sid]['menu-item-object'] = 'custom';
+		$c[$sid]['menu-item-type'] = 'custom';
+		$c[$sid]['menu-item-parent-id'] = ($n == 0) ?  0 : $saved_items[0];
+		$c[$sid]['menu-item-position'] = ($n <= 1) ? 1 : $n;
+		$c[$sid]['menu-item-title'] = $miDb[$sid]->post_title;
+		$c[$sid]['menu-item-url'] = $miDb[$sid]->url;
+		foreach ($post_fields as $pf) {
+			$c[$sid][$pf] = '';
+		}
+	}
+
+	foreach ($c as $k => $args) {
+		$menu_item_db_id = wp_update_nav_menu_item( $nav_menu_selected_id, $k, $args);
+	}
+
+	update_option('photoshelter_menu_create', $nav_menu_selected_id);
+};
+
+
 function add_photoshelter_button() {
 	global $post_ID, $temp_ID;
 	//location of wordpress plugin folder
@@ -361,8 +504,58 @@ function add_photoshelter_button() {
 	$uploading_iframe_ID = (int) (0 == $post_ID ? $temp_ID : $post_ID);
 	$iframe_src = "media-upload.php?post_id=$uploading_iframe_ID";
 	$iframe_src = apply_filters('iframe_src', "$iframe_src&amp;type=shelter");
-	$title = __('Add PhotoShelter photo');
+	$title = __('Insert images from your PhotoShelter account');
 	echo "<a href=\"{$iframe_src}&amp;TB_iframe=true&amp;height=500&amp;width=640\" class=\"thickbox\" title=\"$title\"><img src=\"{$pluginURI}/img/icon.gif\" alt=\"$title\" /></a>";	
+}
+
+function sendCORSHeaders($origin=null, $cred=true, $ttl=3600)
+{
+	$dflt_hA = array('Accept', 'Accept-Language', 'Accept-Encoding', 'Origin', 'Referer', 'User-Agent', 'Content-Type');
+	$hA = array();
+
+        if (empty($origin)) {
+                $hA = (function_exists('getallheaders')) ? getallheaders() : array();
+                $origin = (!empty($hA['Origin'])) ? $hA['Origin'] : '*';
+        }
+
+	if (!empty($hA)) {
+		if (!empty($hA['Access-Control-Request-Headers'])) {
+			header('Access-Control-Allow-Headers: ' . $hA['Access-Control-Request-Headers']);
+		} else {
+			header('Access-Control-Allow-Headers: ' . implode(', ', array_keys($hA)));
+		}
+	}
+	else {
+		header('Access-Control-Allow-Headers: ' . implode(', ', $dflt_hA ));
+	}
+
+        $cred = ($cred) ? 'true' : 'false';
+
+        header('Access-Control-Allow-Origin: ' . $origin);
+        header('Access-Control-Allow-Credentials: ' . $cred);
+        header('Access-Control-Allow-Methods: POST, GET');
+        header('Access-Control-Max-Age: ' . $ttl);
+
+        return;
+}
+
+function ps_export_headers() {
+	sendCORSHeaders();
+	if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+		exit();
+	}
+}
+
+function ps_get_blog_url() {
+	if (!empty($_GET['PS_FEEDURL'])) {
+		ps_export_headers();
+		header('Content-Type: application/json');
+		if (function_exists('json_encode'))
+			echo json_encode(array('rss_url' => get_bloginfo("rss2_url")));
+		else
+			echo '{"rss_url":"' . str_replace('/','\/',get_bloginfo("rss2_url")) . '"}';
+		exit();
+	}
 }
 
 include_once( WP_PLUGIN_DIR . '/photoshelter-official-plugin/photoshelter_client.php');
@@ -371,9 +564,14 @@ $GLOBALS['psc'] = new Photoshelter_Client();
 
 //$GLOBALS['ps_errors'] = new WP_Error;
 
+add_action( 'send_headers', 'ps_export_headers' );
+add_action( 'init', 'ps_get_blog_url' );
+
 add_action( 'init', 'process_photoshelter_login' );
 add_action( 'init', 'process_photoshelter_org' );
+add_action( 'init', 'add_photoshelter_menu' );
 add_action( 'init', 'logout', 1 );
+
 // add media button
 add_action( 'admin_menu','add_menu');
 add_action( 'admin_head', 'ps_admin_css');

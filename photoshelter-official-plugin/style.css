@@ -14,18 +14,88 @@ ul.ps_images {
 
 ul.ps_images li,.embed .thumb_big {
 	float: left;
-	width: 120px;
-	height: 120px;
-	border: 1px solid #CCCCCC;
-	background-color: #F5F5F5;
+	width: 123px;
+	background-color: #FFF;
 	margin: 5px;
-	padding: 5px;
 	text-align: center;
 	overflow:hidden;
+    border: 5px solid transparent;
+}
+
+div.border {
+    padding: 3px;
+    border: 1px solid #AAA;
+}
+
+ul.ps_images li:hover {
+    border: 5px solid #D7D7D7;
 }
 
 ul.ps_images li .thumb {
-	height: 100px;
+    padding-top: 9px;
+    background-image: url('<?php bloginfo('wpurl');?>/wp-content/plugins/photoshelter-official-plugin/img/thumbs2.png');
+    background-position: 0 -300px;
+	height: 123px;
+}
+
+ul.ps-img-thumbs li .thumb {
+    background: #DDD;
+}
+
+ul.ps_images li a {
+    text-decoration: none;
+}
+
+button.sort-asc {
+    cursor: pointer;
+    padding-top: 7px;
+    margin-left: 3px;
+    background: none;
+    background-image: url('<?php bloginfo('wpurl');?>/wp-content/plugins/photoshelter-official-plugin/img/icons2.png');
+    background-position: -350px 0;
+    width: 16px;
+    height: 24px;
+    border: none;
+}
+
+button.sort-desc {
+    cursor: pointer;
+    padding-top: 7px;
+    margin-left: 3px;
+    background: none;
+    background-image: url('<?php bloginfo('wpurl');?>/wp-content/plugins/photoshelter-official-plugin/img/icons2.png');
+    background-position: -300px 0;
+    width: 16px;
+    height: 24px;
+    border: none;
+}
+
+div.gal-name {
+    clear: both;
+    color: black;
+    font-size: 1.1em;
+    text-decoration: none !important;
+    overflow: hidden;
+    height: 30px;
+}
+
+div.gal-button-left {
+    margin-left: 3px;
+    float: left;
+    height: 20px;
+}
+
+div.gal-button-right {
+    margin-right: 3px;
+    float: right;
+    height: 20px;
+}
+
+div.caption {
+    text-decoration: none !important;
+    color: black;
+    overflow: hidden;
+    height: 30px;
 }
 
 div#searchbox {
@@ -64,14 +134,28 @@ td.gallery_name {
 
 .pagination ul li.prev {
 	float: left;
-	width: 40px;
-	margin-right: 10px;
+    padding: 0px;
+    margin-right: -6px;
+    margin-top: 1px;
+}
+
+.pagination ul li.prev div.prev-arrow {
+    height: 70px;
+    background: url('<?php bloginfo('wpurl');?>/wp-content/plugins/photoshelter-official-plugin/img/icons2.png');
+    background-position: -300px -600px;
 }
 
 .pagination ul li.next {
 	float: left;
-	width: 40px;
-	margin-left: 20px;
+    padding: 0px;
+    margin-right: -6px;
+    margin-top: -1px;
+}
+
+.pagination ul li.next div.next-arrow {
+    height: 70px;
+    background: url('<?php bloginfo('wpurl');?>/wp-content/plugins/photoshelter-official-plugin/img/icons2.png');
+    background-position: -350px -600px;
 }
 
 .pagination ul li.current {
@@ -84,4 +168,16 @@ td.gallery_name {
 	width:220px;
 	float:left;
 	margin-right: 40px;
+}
+
+.ps-warning {
+	padding: 5px;
+	background-color: #FFC0CB;
+	border: 1px solid #DC143C;
+}
+
+.ps-success {
+	padding: 5px;
+	background-color: #90EE90;
+	border: 1px solid #008000;
 }
